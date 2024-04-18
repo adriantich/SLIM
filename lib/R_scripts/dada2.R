@@ -13,8 +13,8 @@ fwd <- args[9]
 rev <- args[10]
 
 
-require(dada2)
-require(seqinr)
+library(dada2)
+library(seqinr)
 
 ## general path
 setwd(paste("/app/data/", token, "/", sep=""))
@@ -215,6 +215,7 @@ if (length(noReads) > 0 && noReads_track == TRUE)
 # add the samples with no reads in the ASV table
 if (length(noReads) > 0  && noReads_track == TRUE) ASV_table_consensus <- rbind(ASV_table_consensus, tmp)
 
+# Adrià: I think the following is not right so if the there has been some samples not filtered noReads_track is TRUE in lines 71 and it should be the oposite in the following
 # transpose table and sort table and noChimera count as in the t2s
 if (noReads_track) samples_names <- as.character(t2s$sample)
 if (!noReads_track) samples_names <- as.character(t2s_keep$sample[paste0(t2s_name, "_", t2s_keep$run, "_", t2s_keep$sample) %in% withReads])

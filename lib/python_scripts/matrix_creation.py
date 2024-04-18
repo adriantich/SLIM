@@ -50,6 +50,7 @@ def read_uc (filename, origins):
 
 	return matrix, read_clusters
 
+# def read_out()
 
 def rewrite_fasta (read_clusters, fin, fout):
 	with open(fout, 'w') as fp:
@@ -165,6 +166,13 @@ if __name__ == '__main__':
 	outfile = ""
 	t2s = ""
 	fin = fout = ""
+
+	uc_file = "swarm_uclust.uc"
+	origins = "fasta_merging.ori"
+	outfile = "otus-swarm.tsv"
+	t2s = ""
+	fin = "vsearch_output.fasta"
+	fout = "clustered-reads-swarm.fasta"
 
 	for idx in range(len(sys.argv)):
 		if sys.argv[idx] == '-uc':

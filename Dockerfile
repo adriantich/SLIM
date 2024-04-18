@@ -9,7 +9,23 @@ COPY jranke.asc /app
 
 # Add the CRAN repos sources for install latest version of R
 RUN apt-get update && apt-get install -y dirmngr gnupg apt-transport-https ca-certificates software-properties-common
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
+
+
+###### this part is specific for NORCE/LISA ######
+
+# Add NORCE CA cert
+COPY certs/*crt /usr/local/share/ca-certificates/ 
+RUN chmod 644 /usr/local/share/ca-certificates/*.crt && update-ca-certificates 
+ENV REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt 
+ENV CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt 
+ENV NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-certificates.crt 
+ENV SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt 
+
+# Workaround: use port 80 and hkp proto 
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
+###### to here the specific for NORCE/LISA ######
+
+# this is also comented for NORCE/LISA # RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
 RUN add-apt-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu focal-cran40/'
 #RUN sh -c 'echo "deb https://cloud.r-project.org/bin/linux/ubuntu bionic-cran35/" >> /etc/apt/sources.list'
 #RUN apt-key add /app/jranke.asc
@@ -94,8 +110,8 @@ COPY lib/dada2 /app/lib/dada2
 ###RUN apt-get -y build-dep libcurl4-gnutls-dev
 ###RUN apt-get -y install libcurl4-gnutls-dev
 # RUN R -e 'install.packages("devtools", repos="https://stat.ethz.ch/CRAN/")'
-RUN R -e 'install.packages("dplyr", repos="https://stat.ethz.ch/CRAN/")'
-RUN R -e 'install.packages("seqinr", repos="https://stat.ethz.ch/CRAN/")'
+RUN R -e 'install.packages("dplyr")'
+RUN R -e 'install.packages("seqinr")'
 # RUN R -e 'library(devtools);install_github("tobiasgf/lulu")'
 RUN R -e 'install.packages("/app/lib/lulu",repos=NULL)'
 RUN R -e 'install.packages("BiocManager",dependencies=TRUE,repos="https://stat.ethz.ch/CRAN/")'
@@ -120,6 +136,11 @@ RUN R -e 'BiocManager::install("DECIPHER")'
 
 # ----- install vim for manual editing (remove after during developing) ----- #
 # RUN apt-get install vim -y
+
+# ----- install nextflow ----- #
+
+RUN curl -s https://get.sdkman.io | bash && sdk install java 17.0.10-tem
+RUN curl -s https://get.nextflow.io | bash && chmod +x nextflow && mv nextflow /app/lib/.
 
 # ----- Webserver -----
 

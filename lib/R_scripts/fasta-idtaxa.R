@@ -8,7 +8,7 @@ filename <- args[3]
 threshold <- strtoi(args[4])
 proc <- strtoi(args[5])
 
-require('DECIPHER')
+library('DECIPHER')
 
 ## to rename the Taxa object as "trainingSet"
 trainedClassif <- load(classifier)
