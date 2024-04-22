@@ -139,7 +139,7 @@ RUN R -e 'BiocManager::install("DECIPHER")'
 
 # ----- install nextflow ----- #
 
-RUN curl -s https://get.sdkman.io | bash && sdk install java 17.0.10-tem
+RUN curl -s https://get.sdkman.io | bash && source "/root/.sdkman/bin/sdkman-init.sh" && sdk install java 17.0.10-tem
 RUN curl -s https://get.nextflow.io | bash && chmod +x nextflow && mv nextflow /app/lib/.
 
 # ----- Webserver -----
