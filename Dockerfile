@@ -182,7 +182,7 @@ conda install -c conda-forge cmake git -y"
 # install spoa
 RUN /bin/bash -c "source activate ashure && \
 	cd /app/lib/ASHURE/spoa && \
-	cmake -B build -DCMAKE_BUILD_TYPE=Release && \
+	cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_VERSION_MINIMUM=3.5 && \
 	make -C build && cd /app"
 # install python modules for ASHURE
 	# due to a deprecation error, pandas need to be previous to 1.4.0
