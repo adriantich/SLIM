@@ -38,16 +38,47 @@ fi
 
 # Demultiplexing tool # no stable release yet... oops
 if [ ! -d "DTD" ]; then
-	mkdir DTD
-	cd DTD
-	# git clone https://github.com/yoann-dufresne/DoubleTagDemultiplexer.git DTD/
-	curl -OL https://github.com/yoann-dufresne/DoubleTagDemultiplexer/archive/f687329ac846193605af97ef2b3f65d1bf5bce04.zip
-	unzip f687329ac846193605af97ef2b3f65d1bf5bce04.zip
-	mv DoubleTagDemultiplexer-f687329ac846193605af97ef2b3f65d1bf5bce04/* .
-	# git pull
-	cd ..
+    mkdir DTD
+    cd DTD || exit 1
+    ZIPNAME="f687329ac846193605af97ef2b3f65d1bf5bce04.zip"
+    DIRNAME="DoubleTagDemultiplexer-f687329ac846193605af97ef2b3f65d1bf5bce04"
+    curl -OL "https://github.com/yoann-dufresne/DoubleTagDemultiplexer/archive/${ZIPNAME}"
+
+    # Try to unzip with 'unzip', otherwise use Python. If both fail, cleanup and exit.
+    if command -v unzip >/dev/null 2>&1; then
+        unzip "$ZIPNAME"
+        status=$?
+        if [ $status -ne 0 ]; then
+            echo "unzip failed to extract the zip file."
+        fi
+    else
+        echo "Warning: 'unzip' is not installed. Attempting to use Python to extract the zip file..."
+        if command -v python3 >/dev/null 2>&1; then
+            python3 -m zipfile -e "$ZIPNAME" .
+            status=$?
+        elif command -v python >/dev/null 2>&1; then
+            python -m zipfile -e "$ZIPNAME" .
+            status=$?
+        else
+            echo "Error: Neither 'unzip' nor Python are available to extract the zip file."
+            status=1
+        fi
+    fi
+
+    # Check if extraction worked (directory exists and is non-empty)
+    if [ $status -ne 0 ] || [ ! -d "$DIRNAME" ] || [ -z "$(ls -A "$DIRNAME" 2>/dev/null)" ]; then
+        echo "Extraction failed. Cleaning up..."
+        cd ..
+        rm -rf DTD
+        echo "Error: Failed to extract the archive. Aborting."
+        exit 1
+    fi
+
+    mv "$DIRNAME"/* .
+    rmdir "$DIRNAME"
+    cd ..
 else
-	echo "DTD is already there..."
+    echo "DTD is already there..."
 fi
 
 
